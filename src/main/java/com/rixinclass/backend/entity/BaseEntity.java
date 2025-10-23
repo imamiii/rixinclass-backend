@@ -22,7 +22,7 @@ public class BaseEntity implements Serializable {
     /**
      * 创建人
      */
-    String createUser;
+    Long createUser;
 
     /**
      * 更新时间
@@ -32,5 +32,5 @@ public class BaseEntity implements Serializable {
     /**
      * 更新者
      */
-    String updateUser;
+    Long updateUser;
 }
