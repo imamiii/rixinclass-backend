@@ -14,8 +14,8 @@ USE `rixinclass`;
 -- =========================================================
 -- 1. 用户表（教师/管理员）
 -- =========================================================
-DROP TABLE IF EXISTS `tb_user`;
-CREATE TABLE `tb_user` (
+DROP TABLE IF EXISTS `t_sys_user`;
+CREATE TABLE `t_sys_user` (
   `user_id`        BIGINT       NOT NULL AUTO_INCREMENT COMMENT '用户ID',
   `username`       VARCHAR(50)  NOT NULL                COMMENT '用户名',
   `password`       VARCHAR(100) NOT NULL                COMMENT '登录密码',
@@ -27,8 +27,10 @@ CREATE TABLE `tb_user` (
   `openid`         VARCHAR(100) DEFAULT NULL            COMMENT '微信OpenID（小程序登录可用）',
   `user_type`      TINYINT      NOT NULL DEFAULT 1      COMMENT '用户类型：1教师 2管理员',
   `status`         TINYINT      NOT NULL DEFAULT 1      COMMENT '状态：0禁用 1正常',
-  `create_time`    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time`    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_user` BIGINT   DEFAULT NULL                      COMMENT '创建人',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `update_user` BIGINT   DEFAULT NULL                      COMMENT '更新人',
   `is_deleted`     TINYINT      NOT NULL DEFAULT 0      COMMENT '是否删除：0否 1是',
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `uk_username` (`username`),
@@ -40,8 +42,8 @@ CREATE TABLE `tb_user` (
 -- =========================================================
 -- 2. 登录日志表（仅记录必要信息，注意隐私）
 -- =========================================================
-DROP TABLE IF EXISTS `tb_login_log`;
-CREATE TABLE `tb_login_log` (
+DROP TABLE IF EXISTS `t_sys_login_log`;
+CREATE TABLE `t_sys_login_log` (
   `log_id`       BIGINT       NOT NULL AUTO_INCREMENT COMMENT '日志ID',
   `user_id`      BIGINT       DEFAULT NULL            COMMENT '用户ID（软关联）',
   `username`     VARCHAR(50)  DEFAULT NULL            COMMENT '用户名快照（便于排查）',
@@ -51,6 +53,10 @@ CREATE TABLE `tb_login_log` (
   `ua`           VARCHAR(255) DEFAULT NULL            COMMENT '设备/浏览器UA',
   `result`       TINYINT      NOT NULL DEFAULT 1      COMMENT '结果：1成功 0失败',
   `fail_reason`  VARCHAR(255) DEFAULT NULL            COMMENT '失败原因（密码错误/锁定等）',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_user` BIGINT   DEFAULT NULL                      COMMENT '创建人',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `update_user` BIGINT   DEFAULT NULL                      COMMENT '更新人',
   PRIMARY KEY (`log_id`),
   KEY `idx_user_time` (`user_id`, `login_time`),
   KEY `idx_result_time` (`result`, `login_time`)
@@ -60,8 +66,8 @@ CREATE TABLE `tb_login_log` (
 -- =========================================================
 -- 3. 实验室表
 -- =========================================================
-DROP TABLE IF EXISTS `tb_laboratory`;
-CREATE TABLE `tb_laboratory` (
+DROP TABLE IF EXISTS `t_cms_laboratory`;
+CREATE TABLE `t_cms_laboratory` (
   `lab_id`         BIGINT       NOT NULL AUTO_INCREMENT COMMENT '实验室ID',
   `lab_code`       VARCHAR(50)  NOT NULL                COMMENT '实验室编号（如：505）',
   `lab_name`       VARCHAR(100) NOT NULL                COMMENT '实验室名称',
@@ -74,8 +80,10 @@ CREATE TABLE `tb_laboratory` (
   `lab_admin`      VARCHAR(50)  DEFAULT NULL            COMMENT '实验室负责人',
   `status`         TINYINT      NOT NULL DEFAULT 1      COMMENT '状态：0维护 1正常 2停用',
   `remark`         TEXT         DEFAULT NULL            COMMENT '备注',
-  `create_time`    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time`    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_user` BIGINT   DEFAULT NULL                      COMMENT '创建人',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `update_user` BIGINT   DEFAULT NULL                      COMMENT '更新人',
   `is_deleted`     TINYINT      NOT NULL DEFAULT 0      COMMENT '是否删除：0否 1是',
   PRIMARY KEY (`lab_id`),
   UNIQUE KEY `uk_lab_code` (`lab_code`),
@@ -87,8 +95,8 @@ CREATE TABLE `tb_laboratory` (
 -- =========================================================
 -- 4. 排课申请表
 -- =========================================================
-DROP TABLE IF EXISTS `tb_booking`;
-CREATE TABLE `tb_booking` (
+DROP TABLE IF EXISTS `t_biz_booking`;
+CREATE TABLE `t_biz_booking` (
   `booking_id`        BIGINT       NOT NULL AUTO_INCREMENT COMMENT '申请ID',
   `booking_no`        VARCHAR(50)  NOT NULL                COMMENT '申请编号（唯一）',
   `user_id`           BIGINT       NOT NULL                COMMENT '申请教师ID（软关联）',
@@ -112,8 +120,10 @@ CREATE TABLE `tb_booking` (
   `review_user_id`    BIGINT       DEFAULT NULL            COMMENT '审核人ID（管理员）',
   `review_time`       DATETIME     DEFAULT NULL            COMMENT '审核时间',
   `review_remark`     VARCHAR(255) DEFAULT NULL            COMMENT '审核备注/拒绝原因',
-  `create_time`       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time`       DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_user` BIGINT   DEFAULT NULL                      COMMENT '创建人',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `update_user` BIGINT   DEFAULT NULL                      COMMENT '更新人',
   `is_deleted`        TINYINT      NOT NULL DEFAULT 0      COMMENT '是否删除：0否 1是',
   PRIMARY KEY (`booking_id`),
   UNIQUE KEY `uk_booking_no` (`booking_no`),
@@ -126,8 +136,8 @@ CREATE TABLE `tb_booking` (
 -- =========================================================
 -- 5. 排课结果表（自动/人工），含冲突标识
 -- =========================================================
-DROP TABLE IF EXISTS `tb_schedule`;
-CREATE TABLE `tb_schedule` (
+DROP TABLE IF EXISTS `t_biz_schedule`;
+CREATE TABLE `t_biz_schedule` (
   `schedule_id`    BIGINT       NOT NULL AUTO_INCREMENT COMMENT '排课ID',
   `booking_id`     BIGINT       NOT NULL                COMMENT '关联申请ID（软关联）',
   `lab_id`         BIGINT       NOT NULL                COMMENT '实验室ID（软关联）',
@@ -145,8 +155,10 @@ CREATE TABLE `tb_schedule` (
   `conflict_reason`VARCHAR(255) DEFAULT NULL            COMMENT '冲突原因',
   `schedule_type`  TINYINT      NOT NULL DEFAULT 1      COMMENT '排课类型：1自动 2手动',
   `status`         TINYINT      NOT NULL DEFAULT 1      COMMENT '状态：0取消 1正常',
-  `create_time`    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time`    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_user` BIGINT   DEFAULT NULL                      COMMENT '创建人',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `update_user` BIGINT   DEFAULT NULL                      COMMENT '更新人',
   `is_deleted`     TINYINT      NOT NULL DEFAULT 0      COMMENT '是否删除：0否 1是',
   PRIMARY KEY (`schedule_id`),
   KEY `idx_booking` (`booking_id`),
@@ -158,8 +170,8 @@ CREATE TABLE `tb_schedule` (
 -- =========================================================
 -- 6. 公告/通知表（面向全体或指定对象）
 -- =========================================================
-DROP TABLE IF EXISTS `tb_notice`;
-CREATE TABLE `tb_notice` (
+DROP TABLE IF EXISTS `t_cms_notice`;
+CREATE TABLE `t_cms_notice` (
   `notice_id`     BIGINT        NOT NULL AUTO_INCREMENT COMMENT '通知ID',
   `title`         VARCHAR(200)  NOT NULL                COMMENT '标题',
   `content`       TEXT          NOT NULL                COMMENT '正文',
@@ -169,8 +181,10 @@ CREATE TABLE `tb_notice` (
   `priority`      TINYINT       NOT NULL DEFAULT 0      COMMENT '优先级：0普通 1重要 2紧急',
   `is_read`       TINYINT       NOT NULL DEFAULT 0      COMMENT '已读：0否 1是（对单人通知可用）',
   `sender_id`     BIGINT        DEFAULT NULL            COMMENT '发送人（管理员）',
-  `create_time`   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time`   DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_user` BIGINT   DEFAULT NULL                      COMMENT '创建人',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `update_user` BIGINT   DEFAULT NULL                      COMMENT '更新人',
   `is_deleted`    TINYINT       NOT NULL DEFAULT 0      COMMENT '是否删除：0否 1是',
   PRIMARY KEY (`notice_id`),
   KEY `idx_target_read` (`target_user_id`, `is_read`),
@@ -182,14 +196,17 @@ CREATE TABLE `tb_notice` (
 -- =========================================================
 -- 7. 通知/公告操作日志（发布、撤回、阅读等）
 -- =========================================================
-DROP TABLE IF EXISTS `tb_notice_log`;
-CREATE TABLE `tb_notice_log` (
+DROP TABLE IF EXISTS `t_cms_notice_record`;
+CREATE TABLE `t_cms_notice_record` (
   `log_id`      BIGINT       NOT NULL AUTO_INCREMENT COMMENT '日志ID',
   `notice_id`   BIGINT       NOT NULL                COMMENT '通知ID（软关联）',
   `op_user_id`  BIGINT       DEFAULT NULL            COMMENT '操作人ID',
   `op_type`     VARCHAR(30)  NOT NULL                COMMENT '操作类型：publish/revoke/read/mark',
   `op_detail`   VARCHAR(255) DEFAULT NULL            COMMENT '操作描述',
-  `create_time` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
+  `create_user` BIGINT   DEFAULT NULL                      COMMENT '操作人',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `update_user` BIGINT   DEFAULT NULL                      COMMENT '更新人',
   PRIMARY KEY (`log_id`),
   KEY `idx_notice_time` (`notice_id`, `create_time`),
   KEY `idx_user_time` (`op_user_id`, `create_time`)
@@ -199,15 +216,18 @@ CREATE TABLE `tb_notice_log` (
 -- =========================================================
 -- 8. 管理员审核日志（申请审核、冲突处理等）
 -- =========================================================
-DROP TABLE IF EXISTS `tb_admin_audit_log`;
-CREATE TABLE `tb_admin_audit_log` (
+DROP TABLE IF EXISTS `t_biz_audit_log`;
+CREATE TABLE `t_biz_audit_log` (
   `audit_id`     BIGINT       NOT NULL AUTO_INCREMENT COMMENT '审核日志ID',
   `booking_id`   BIGINT       DEFAULT NULL            COMMENT '关联申请ID',
   `schedule_id`  BIGINT       DEFAULT NULL            COMMENT '关联排课ID',
   `admin_user_id`BIGINT       NOT NULL                COMMENT '管理员ID',
   `action`       VARCHAR(50)  NOT NULL                COMMENT '动作：approve/reject/resolve_conflict/update_schedule/other',
   `remark`       VARCHAR(255) DEFAULT NULL            COMMENT '备注/理由',
-  `create_time`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '操作时间',
+  `create_user` BIGINT   DEFAULT NULL                      COMMENT '操作人',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `update_user` BIGINT   DEFAULT NULL                      COMMENT '更新人',
   PRIMARY KEY (`audit_id`),
   KEY `idx_booking` (`booking_id`),
   KEY `idx_schedule` (`schedule_id`),
@@ -218,8 +238,8 @@ CREATE TABLE `tb_admin_audit_log` (
 -- =========================================================
 -- 9. 数据统计表（聚合汇总结果，便于看板）
 -- =========================================================
-DROP TABLE IF EXISTS `tb_statistics`;
-CREATE TABLE `tb_statistics` (
+DROP TABLE IF EXISTS `t_biz_statistics`;
+CREATE TABLE `t_biz_statistics` (
   `stat_id`            BIGINT       NOT NULL AUTO_INCREMENT COMMENT '统计ID',
   `stat_date`          DATE         NOT NULL                COMMENT '统计日期',
   `stat_type`          VARCHAR(50)  NOT NULL                COMMENT '统计类型（daily/weekly/monthly/semester）',
@@ -234,7 +254,10 @@ CREATE TABLE `tb_statistics` (
   `total_students`     INT          NOT NULL DEFAULT 0      COMMENT '总学生数',
   `lab_usage_rate`     DECIMAL(5,2) NOT NULL DEFAULT 0.00   COMMENT '实验室使用率(%)',
   `stat_data`          JSON         DEFAULT NULL            COMMENT '扩展统计JSON',
-  `create_time`        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_user` BIGINT   DEFAULT NULL                      COMMENT '创建人',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `update_user` BIGINT   DEFAULT NULL                      COMMENT '更新人',
   PRIMARY KEY (`stat_id`),
   UNIQUE KEY `uk_date_type` (`stat_date`, `stat_type`),
   KEY `idx_year_sem` (`academic_year`, `semester`)
@@ -244,15 +267,17 @@ CREATE TABLE `tb_statistics` (
 -- =========================================================
 -- 10. 系统配置表（当前学期、统一收集时间等）
 -- =========================================================
-DROP TABLE IF EXISTS `tb_system_config`;
-CREATE TABLE `tb_system_config` (
+DROP TABLE IF EXISTS `t_biz_config`;
+CREATE TABLE `t_biz_config` (
   `config_id`    BIGINT       NOT NULL AUTO_INCREMENT COMMENT '配置ID',
   `config_key`   VARCHAR(100) NOT NULL                COMMENT '配置键（唯一）',
   `config_value` TEXT         DEFAULT NULL            COMMENT '配置值',
   `config_type`  VARCHAR(50)  NOT NULL DEFAULT 'system' COMMENT '配置类型',
   `description`  VARCHAR(255) DEFAULT NULL            COMMENT '说明',
-  `create_time`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_user` BIGINT   DEFAULT NULL                      COMMENT '创建人',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `update_user` BIGINT   DEFAULT NULL                      COMMENT '更新人',
   PRIMARY KEY (`config_id`),
   UNIQUE KEY `uk_config_key` (`config_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='系统配置表（键值对）';
@@ -261,8 +286,8 @@ CREATE TABLE `tb_system_config` (
 -- =========================================================
 -- 11. 黑名单日历（放假/调休/考试周/故障等禁排信息）
 -- =========================================================
-/*DROP TABLE IF EXISTS `tb_blackout_calendar`;
-CREATE TABLE `tb_blackout_calendar` (
+/*DROP TABLE IF EXISTS `t_cms_calendar`;
+CREATE TABLE `t_cms_calendar` (
   `blk_id`        BIGINT       NOT NULL AUTO_INCREMENT COMMENT '记录ID',
   `scope_type`    TINYINT      NOT NULL                COMMENT '范围：1全校 2实验室 3课程 4班级',
   `lab_id`        BIGINT       DEFAULT NULL            COMMENT '实验室ID（当 scope=2 时使用）',
@@ -284,17 +309,17 @@ CREATE TABLE `tb_blackout_calendar` (
 -- =========================================================
 -- 12. 帮助中心（使用指南/FAQ/问题反馈 设置）
 -- =========================================================
-DROP TABLE IF EXISTS `tb_help_article`;
-CREATE TABLE `tb_help_article` (
+DROP TABLE IF EXISTS `t_cms_help`;
+CREATE TABLE `t_cms_help` (
   `article_id`   BIGINT       NOT NULL AUTO_INCREMENT COMMENT '文章ID',
   `article_type` TINYINT      NOT NULL                COMMENT '类型：0使用指南 1常见问题 2问题反馈',
   `title`        VARCHAR(200) NOT NULL                COMMENT '标题',
   `content`      MEDIUMTEXT   NOT NULL                COMMENT '内容（富文本/HTML）',
   `status`       TINYINT      NOT NULL DEFAULT 1      COMMENT '状态：0下线 1上线',
-  `create_user`  BIGINT       DEFAULT NULL            COMMENT '创建人',
-  `update_user`  BIGINT       DEFAULT NULL            COMMENT '更新人',
-  `create_time`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time`  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `create_user` BIGINT   DEFAULT NULL                      COMMENT '创建人',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `update_user` BIGINT   DEFAULT NULL                      COMMENT '更新人',
   `is_deleted`   TINYINT      NOT NULL DEFAULT 0      COMMENT '是否删除：0否 1是',
   PRIMARY KEY (`article_id`),
   KEY `idx_type_status` (`article_type`, `status`)
