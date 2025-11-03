@@ -1,0 +1,73 @@
+1. RixinClassApplication.java       # 项目启动类
+2. config                          # 配置类
+   2.1. MyBatisPlusConfig.java      # MyBatis-Plus配置
+   2.2. PasswordEncoderConfig.java  # 密码加密配置
+   2.3. WebMvcConfig.java           # 跨域配置
+3. controller                      # 控制器（按业务功能）
+   3.1. AuthController.java         # 登录登出
+   3.2. UserInfoController.java     # 用户信息管理
+   3.3. CourseHistoryController.java # 查看历史记录
+   3.4. NoticeController.java       # 查看通知
+   3.5. AnnouncementController.java # 查看公告
+   3.6. HelpController.java         # 帮助中心查询（指南/FAQ/反馈）
+   3.7. CourseAuditController.java  # 排课申请审核
+   3.8. ScheduleController.java     # 课表查看（导出）
+   3.9. LabController.java          # 实验室管理
+   3.10. SystemConfigController.java # 系统配置
+   3.11. AnnouncementManageController.java # 公告管理
+   3.12. HelpManageController.java   # 帮助中心管理
+   3.13. AuditRecordController.java  # 审核记录显示
+   3.14. DataStatController.java     # 数据统计
+4. service                         # 服务层（按业务功能）
+   4.1. AuthService.java            # 登录登出服务
+   4.2. UserInfoService.java        # 用户信息管理服务
+   4.3. CourseHistoryService.java   # 历史记录服务
+   4.4. NoticeService.java          # 通知服务
+   4.5. AnnouncementService.java    # 公告查询服务
+   4.6. HelpService.java            # 帮助中心查询服务
+   4.7. CourseAuditService.java     # 排课审核服务
+   4.8. ScheduleService.java        # 课表服务
+   4.9. LabService.java             # 实验室管理服务
+   4.10. SystemConfigService.java    # 系统配置服务
+   4.11. AnnouncementManageService.java # 公告管理服务
+   4.12. HelpManageService.java      # 帮助中心管理服务
+   4.13. AuditRecordService.java     # 审核记录服务
+   4.14. DataStatService.java        # 数据统计服务
+5. mapper                          # 数据访问层
+   5.1. TSysUserMapper.java         # 用户Mapper
+   5.2. UserLoginLogMapper.java     # 登录日志Mapper
+   5.3. TBizBookingMapper.java      # 排课申请Mapper
+   5.4. TBizScheduleMapper.java     # 排课结果Mapper
+   5.5. NoticeMapper.java           # 通知Mapper
+   5.6. AnnouncementMapper.java     # 公告Mapper
+   5.7. HelpFeedbackMapper.java     # 帮助反馈Mapper
+   5.8. TLabMapper.java             # 实验室Mapper
+   5.9. SystemConfigMapper.java     # 系统配置Mapper
+   5.10. AdminAuditLogMapper.java    # 审核日志Mapper
+   5.11. SysDataStatMapper.java      # 数据统计Mapper
+6. entity                          # 实体类（对应数据库表）
+   6.1. TSysUser.java               # 用户实体
+   6.2. UserLoginLog.java           # 登录日志实体
+   6.3. TBizBooking.java            # 排课申请实体
+   6.4. TBizSchedule.java           # 排课结果实体
+   6.5. Notice.java                 # 通知实体
+   6.6. Announcement.java           # 公告实体
+   6.7. HelpFeedback.java           # 帮助反馈实体
+   6.8. TLab.java                   # 实验室实体
+   6.9. SystemConfig.java           # 系统配置实体
+   6.10. AdminAuditLog.java          # 审核日志实体
+   6.11. SysDataStat.java            # 数据统计实体
+7. dto                             # 数据传输对象（入参/出参）
+   7.1. LoginDto.java               # 登录入参
+   7.2. LoginRespDto.java           # 登录出参
+   7.3. UserUpdateDto.java          # 用户信息修改入参
+   7.4. CourseApplyDto.java         # 排课申请入参
+   7.5. AuditDto.java               # 审核入参
+   7.6. LabDto.java                 # 实验室管理入参
+   7.7. SystemConfigDto.java        # 系统配置入参
+   7.8. AnnouncementDto.java        # 公告发布入参
+   7.9. HelpUpdateDto.java          # 帮助中心更新入参
+8. util                            # 工具类
+   8.1. Result.java                 # 统一返回结果
+   8.2. BusinessConstant.java       # 业务常量
+   8.3. JwtUtil.java                # JWT工具类
