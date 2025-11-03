@@ -23,9 +23,10 @@ public class JwtUtil {
     private final Key key;
     private final long expirationMs;
 
-    public JwtUtil(@Value("${jwt.secret}") String secret,
+    public JwtUtil(@Value("${jwt.secret}") String secretBase64,
                    @Value("${jwt.expiration}") long expirationMs) {
-        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        byte[] keyBytes = java.util.Base64.getDecoder().decode(secretBase64);
+        this.key = io.jsonwebtoken.security.Keys.hmacShaKeyFor(keyBytes);
         this.expirationMs = expirationMs;
     }
 
