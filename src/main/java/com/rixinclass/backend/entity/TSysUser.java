@@ -4,18 +4,12 @@ package com.rixinclass.backend.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.rixinclass.backend.utils.BusinessConstant;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-
-/**
- * @Description 系统用户表
- * @Author DengWenyu
- * @Date 2025/10/23 19:04
- * @Version 1.0
- */
 
 @Data
 @NoArgsConstructor
@@ -26,6 +20,16 @@ import lombok.experimental.Accessors;
 public class TSysUser extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
+    /*转换用户类型为角色字符串*/
+    public String getRole() {
+        if (this.userType == 0) {
+            return BusinessConstant.ROLE_TEACHER;
+        } else if (this.userType == 1) {
+            return BusinessConstant.ROLE_ADMIN;
+        }
+        return null;
+    }
+
     @TableId(value = "user_id", type = IdType.AUTO)
     private Long userId;
 
@@ -34,6 +38,9 @@ public class TSysUser extends BaseEntity {
 
     /** 登录密码 */
     private String password;
+
+    /** 工号（登录用） */
+    private String workNo;
 
     /** 昵称 */
     private String nickname;
