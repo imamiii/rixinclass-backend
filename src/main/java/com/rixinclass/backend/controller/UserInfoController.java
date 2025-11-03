@@ -2,8 +2,8 @@ package com.rixinclass.backend.controller;
 
 import com.rixinclass.backend.DTO.UserUpdateDto;
 import com.rixinclass.backend.entity.TSysUser;
+import com.rixinclass.backend.security.JwtUtil;
 import com.rixinclass.backend.service.UserInfoService;
-import com.rixinclass.backend.utils.JwtUtil;
 import com.rixinclass.backend.utils.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

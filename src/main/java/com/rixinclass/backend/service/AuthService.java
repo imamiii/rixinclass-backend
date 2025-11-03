@@ -7,7 +7,7 @@ import com.rixinclass.backend.entity.TSysLoginLog;
 import com.rixinclass.backend.entity.TSysUser;
 import com.rixinclass.backend.mapper.TSysLoginLogMapper;
 import com.rixinclass.backend.mapper.TSysUserMapper;
-import com.rixinclass.backend.utils.JwtUtil;
+import com.rixinclass.backend.security.JwtUtil;
 import com.rixinclass.backend.utils.Result;
 import jakarta.annotation.Resource;
 import org.springframework.security.crypto.password.PasswordEncoder;
